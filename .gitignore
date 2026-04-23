@@ -1,5 +1,4 @@
-stitch-skills-0.1/
-DESIGN.md
-SITE.md
-.gemini/
+node_modules/
+.env
+.DS_Store
 *.log

@@ -1,9 +1,7 @@
-// ═══════════════════ GLOBAL STORAGE (KeyValue.xyz) ═══════════════════
-const KV_URL = 'https://keyvalue.xyz/v1/dcf345f4169e49e798e3/anjali_birthday_final'; 
-
 // ═══════════════════ NOTIFICATION LOGIC ═══════════════════
 function showNotification(message, icon = '✨') {
     const container = document.getElementById('toast-container');
+    if (!container) return;
     const toast = document.createElement('div');
     toast.className = 'toast';
     toast.innerHTML = `<span>${icon}</span> <span>${message}</span>`;
@@ -12,7 +10,7 @@ function showNotification(message, icon = '✨') {
     setTimeout(() => {
         toast.classList.add('fade-out');
         setTimeout(() => toast.remove(), 500);
-    }, 4000);
+    }, 3000);
 }
 
 // ═══════════════════ GIFT TEASER ═══════════════════
@@ -21,7 +19,7 @@ function giftClick() {
 }
 
 // ═══════════════════ COUNTDOWN LOGIC ═══════════════════
-const targetDate = new Date(2026, 3, 24, 0, 0, 0).getTime(); // April 24, 2026 at 00:00:00 IST
+const targetDate = new Date(2026, 3, 24, 0, 0, 0).getTime(); 
 
 function updateCountdown() {
     const now = new Date().getTime();
@@ -32,10 +30,9 @@ function updateCountdown() {
         document.getElementById('hours').innerText = "00";
         document.getElementById('minutes').innerText = "00";
         document.getElementById('seconds').innerText = "00";
-        document.querySelector('.countdown-card h2').innerText = "🎉 HAPPY BIRTHDAY ANJALI! 🎉";
-        if (!document.body.classList.contains('birthday-mode')) {
-            triggerGrandEvent();
-        }
+        const title = document.querySelector('.countdown-card h2');
+        if (title) title.innerText = "🎉 HAPPY BIRTHDAY ANJALI! 🎉";
+        if (!document.body.classList.contains('birthday-mode')) triggerGrandEvent();
         return;
     }
 
@@ -59,39 +56,11 @@ const stickyNameInput = document.getElementById('stickyName');
 const stickyMessageInput = document.getElementById('stickyMessage');
 const noteColorInput = document.getElementById('noteColor');
 
-let notes = [];
-
-async function fetchNotes() {
-    try {
-        // Add a timestamp to prevent caching
-        const response = await fetch(`${KV_URL}?t=${Date.now()}`);
-        if (response.ok) {
-            const data = await response.json();
-            if (Array.isArray(data)) {
-                if (JSON.stringify(data) !== JSON.stringify(notes)) {
-                    notes = data;
-                    renderNotes();
-                }
-            }
-        }
-    } catch (error) {
-        console.error("Error fetching notes:", error);
-    }
-}
-
-async function saveNotesToServer(notesToSave) {
-    try {
-        await fetch(KV_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(notesToSave)
-        });
-    } catch (error) {
-        console.error("Error saving notes:", error);
-    }
-}
+// Use LocalStorage as primary database for stability
+let notes = JSON.parse(localStorage.getItem('anjali_birthday_notes')) || [];
 
 function renderNotes() {
+    if (!stickyWall) return;
     stickyWall.innerHTML = '';
     notes.forEach((note) => {
         const noteEl = document.createElement('div');
@@ -111,7 +80,7 @@ function renderNotes() {
     });
 }
 
-async function addStickyNote() {
+function addStickyNote() {
     const name = stickyNameInput.value.trim();
     const message = stickyMessageInput.value.trim();
     const color = noteColorInput.value;
@@ -127,153 +96,59 @@ async function addStickyNote() {
         timestamp: Date.now()
     };
 
-    // Add locally for instant feedback
     notes.unshift(newNote);
+    localStorage.setItem('anjali_birthday_notes', JSON.stringify(notes));
     renderNotes();
     
-    // Clear inputs
     stickyNameInput.value = '';
     stickyMessageInput.value = '';
-    
-    // Save to server
-    await saveNotesToServer(notes);
-    
-    // Success notification
     showNotification("Wish posted to the wall! 🎉", "💖");
     confettiEffect();
-    
-    // Re-fetch to sync
-    setTimeout(fetchNotes, 1000);
 }
 
 function confettiEffect(isGrand = false) {
-    const count = isGrand ? 150 : 50;
-    const particles = ['✨', '⭐', '⚪', '🟡', '🟠', '🔴', '🔵', '🟢', '🟣'];
-    
+    const count = isGrand ? 30 : 10; 
+    const particles = ['✨', '🌸', '💖'];
     for (let i = 0; i < count; i++) {
         const confetti = document.createElement('div');
         confetti.innerText = particles[Math.floor(Math.random() * particles.length)];
         confetti.style.position = 'fixed';
         confetti.style.left = Math.random() * 100 + 'vw';
         confetti.style.top = '-5vh';
-        confetti.style.fontSize = Math.random() * (isGrand ? 25 : 15) + 15 + 'px';
         confetti.style.zIndex = '40000';
         confetti.style.pointerEvents = 'none';
-        confetti.style.transition = `transform ${Math.random() * 2 + 2}s linear, opacity 2s`;
-        
+        confetti.style.transition = `transform ${Math.random() * 2 + 3}s linear, opacity 1.5s`;
         document.body.appendChild(confetti);
-        
         setTimeout(() => {
-            confetti.style.transform = `translateY(110vh) rotate(${Math.random() * 360}deg)`;
+            confetti.style.transform = `translateY(110vh) rotate(360deg)`;
             confetti.style.opacity = '0';
-        }, 10);
-        
-        setTimeout(() => confetti.remove(), 4000);
+        }, 50);
+        setTimeout(() => confetti.remove(), 4500);
     }
 }
 
-// 🎆 GOOGLE-STYLE FIREWORKS 🎆
 function startFireworks(isGrand = false) {
-    const canvas = document.createElement('canvas');
-    canvas.id = 'fireworksCanvas';
-    canvas.style.position = 'fixed';
-    canvas.style.top = '0';
-    canvas.style.left = '0';
-    canvas.style.width = '100%';
-    canvas.style.height = '100%';
-    canvas.style.pointerEvents = 'none';
-    canvas.style.zIndex = '30000'; 
-    document.body.appendChild(canvas);
-
-    const ctx = canvas.getContext('2d');
-    let width = canvas.width = window.innerWidth;
-    let height = canvas.height = window.innerHeight;
-
-    window.addEventListener('resize', () => {
-        width = canvas.width = window.innerWidth;
-        height = canvas.height = window.innerHeight;
-    });
-
-    class Particle {
-        constructor(x, y, color, sizeMultiplier = 1) {
-            this.x = x;
-            this.y = y;
-            this.color = color;
-            this.velocity = {
-                x: (Math.random() - 0.5) * (isGrand ? 12 : 8),
-                y: (Math.random() - 0.5) * (isGrand ? 12 : 8)
-            };
-            this.alpha = 1;
-            this.friction = 0.95;
-            this.gravity = isGrand ? 0.05 : 0.1;
-            this.size = (Math.random() * 2 + 1) * sizeMultiplier;
-        }
-
-        draw() {
-            ctx.save();
-            ctx.globalAlpha = this.alpha;
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-            ctx.fillStyle = this.color;
-            ctx.shadowBlur = isGrand ? 10 : 0;
-            ctx.shadowColor = this.color;
-            ctx.fill();
-            ctx.restore();
-        }
-
-        update() {
-            this.velocity.x *= this.friction;
-            this.velocity.y *= this.friction;
-            this.velocity.y += this.gravity;
-            this.x += this.velocity.x;
-            this.y += this.velocity.y;
-            this.alpha -= isGrand ? 0.005 : 0.01;
-        }
-    }
-
-    let particles = [];
-    const colors = ['#FF8E7E', '#FFD5D0', '#A9D6E5', '#B5C99A', '#FFD93D', '#FF6B9D', '#FFFFFF', '#FFD700'];
-
-    function createFirework(x, y) {
-        const color = colors[Math.floor(Math.random() * colors.length)];
-        const pCount = isGrand ? 80 : 40;
-        for (let i = 0; i < pCount; i++) {
-            particles.push(new Particle(x, y, color, isGrand ? 1.5 : 1));
-        }
-    }
-
-    function animate() {
-        ctx.clearRect(0, 0, width, height);
-
-        particles.forEach((particle, index) => {
-            if (particle.alpha > 0) {
-                particle.update();
-                particle.draw();
-            } else {
-                particles.splice(index, 1);
-            }
-        });
-
-        if (particles.length > 0) {
-            requestAnimationFrame(animate);
-        } else {
-            canvas.remove();
-        }
-    }
-
-    let count = 0;
-    const maxCount = isGrand ? 999999 : 10; 
-    const intervalTime = isGrand ? 350 : 400;
+    // Canvas-based particles are heavy, using a lighter simple burst logic
+    const burst = document.createElement('div');
+    burst.style.position = 'fixed';
+    burst.style.top = Math.random() * 60 + 'vh';
+    burst.style.left = Math.random() * 100 + 'vw';
+    burst.style.fontSize = isGrand ? '3rem' : '1.5rem';
+    burst.style.zIndex = '30000';
+    burst.style.pointerEvents = 'none';
+    burst.innerHTML = '✨';
+    burst.style.transition = 'all 1s ease-out';
+    document.body.appendChild(burst);
     
-    const interval = setInterval(() => {
-        const x = Math.random() * width;
-        const y = isGrand ? Math.random() * height : Math.random() * height * 0.7;
-        
-        createFirework(x, y);
-        if (count === 0) animate();
-        count++;
-        if (count > maxCount) clearInterval(interval);
-    }, intervalTime);
+    setTimeout(() => {
+        burst.style.transform = 'scale(3)';
+        burst.style.opacity = '0';
+    }, 50);
+    setTimeout(() => burst.remove(), 1000);
+    
+    if (isGrand) {
+        setTimeout(() => startFireworks(true), 1500);
+    }
 }
 
 function triggerGrandEvent() {
@@ -282,8 +157,8 @@ function triggerGrandEvent() {
     startFireworks(true);
     
     const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3'); 
-    audio.volume = 0.4;
-    audio.play().catch(e => console.log("Audio play blocked by browser"));
+    audio.volume = 0.3;
+    audio.play().catch(() => {});
 
     const overlay = document.createElement('div');
     overlay.className = 'birthday-overlay';
@@ -297,27 +172,19 @@ function triggerGrandEvent() {
     document.body.appendChild(overlay);
 }
 
-// INITIALIZE
 window.addEventListener('load', () => {
-    // Hide Loader
     const loader = document.getElementById('loader');
     setTimeout(() => {
         if (loader) {
             loader.style.opacity = '0';
             setTimeout(() => loader.style.display = 'none', 800);
         }
-        
-        // Trigger initial effects if birthday has already started
         const now = new Date().getTime();
-        if (targetDate - now <= 0) {
-            triggerGrandEvent();
-        } else {
+        if (targetDate - now <= 0) triggerGrandEvent();
+        else {
             confettiEffect();
             startFireworks();
         }
     }, 2000);
-
-    // Initial fetch and start polling
-    fetchNotes();
-    setInterval(fetchNotes, 5000);
+    renderNotes();
 });

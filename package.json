@@ -1,0 +1,26 @@
+{
+  "name": "birthday-website",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/digvija4508-jpg/anjali-birthday.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/digvija4508-jpg/anjali-birthday/issues"
+  },
+  "homepage": "https://github.com/digvija4508-jpg/anjali-birthday#readme",
+  "dependencies": {
+    "body-parser": "^2.2.2",
+    "express": "^5.2.1",
+    "node-fetch": "^2.7.0"
+  }
+}

@@ -1,3 +1,6 @@
+// ═══════════════════ SERVER API ═══════════════════
+const API_URL = '/api/wishes';
+
 // ═══════════════════ NOTIFICATION LOGIC ═══════════════════
 function showNotification(message, icon = '✨') {
     const container = document.getElementById('toast-container');
@@ -26,10 +29,13 @@ function updateCountdown() {
     const distance = targetDate - now;
 
     if (distance <= 0) {
-        document.getElementById('days').innerText = "00";
-        document.getElementById('hours').innerText = "00";
-        document.getElementById('minutes').innerText = "00";
-        document.getElementById('seconds').innerText = "00";
+        const daysEl = document.getElementById('days');
+        if (daysEl) {
+            document.getElementById('days').innerText = "00";
+            document.getElementById('hours').innerText = "00";
+            document.getElementById('minutes').innerText = "00";
+            document.getElementById('seconds').innerText = "00";
+        }
         const title = document.querySelector('.countdown-card h2');
         if (title) title.innerText = "🎉 HAPPY BIRTHDAY ANJALI! 🎉";
         if (!document.body.classList.contains('birthday-mode')) triggerGrandEvent();
@@ -41,10 +47,13 @@ function updateCountdown() {
     const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-    document.getElementById('days').innerText = String(days).padStart(2, '0');
-    document.getElementById('hours').innerText = String(hours).padStart(2, '0');
-    document.getElementById('minutes').innerText = String(minutes).padStart(2, '0');
-    document.getElementById('seconds').innerText = String(seconds).padStart(2, '0');
+    const daysEl = document.getElementById('days');
+    if (daysEl) {
+        document.getElementById('days').innerText = String(days).padStart(2, '0');
+        document.getElementById('hours').innerText = String(hours).padStart(2, '0');
+        document.getElementById('minutes').innerText = String(minutes).padStart(2, '0');
+        document.getElementById('seconds').innerText = String(seconds).padStart(2, '0');
+    }
 }
 
 setInterval(updateCountdown, 1000);
@@ -56,8 +65,36 @@ const stickyNameInput = document.getElementById('stickyName');
 const stickyMessageInput = document.getElementById('stickyMessage');
 const noteColorInput = document.getElementById('noteColor');
 
-// Use LocalStorage as primary database for stability
-let notes = JSON.parse(localStorage.getItem('anjali_birthday_notes')) || [];
+let notes = [];
+
+async function fetchNotes() {
+    try {
+        const response = await fetch(API_URL);
+        if (response.ok) {
+            const data = await response.json();
+            if (Array.isArray(data)) {
+                if (JSON.stringify(data) !== JSON.stringify(notes)) {
+                    notes = data;
+                    renderNotes();
+                }
+            }
+        }
+    } catch (error) {
+        console.error("Error fetching notes:", error);
+    }
+}
+
+async function saveNotesToServer(notesToSave) {
+    try {
+        await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(notesToSave)
+        });
+    } catch (error) {
+        console.error("Error saving notes:", error);
+    }
+}
 
 function renderNotes() {
     if (!stickyWall) return;
@@ -80,7 +117,7 @@ function renderNotes() {
     });
 }
 
-function addStickyNote() {
+async function addStickyNote() {
     const name = stickyNameInput.value.trim();
     const message = stickyMessageInput.value.trim();
     const color = noteColorInput.value;
@@ -97,13 +134,15 @@ function addStickyNote() {
     };
 
     notes.unshift(newNote);
-    localStorage.setItem('anjali_birthday_notes', JSON.stringify(notes));
     renderNotes();
     
     stickyNameInput.value = '';
     stickyMessageInput.value = '';
+    
+    await saveNotesToServer(notes);
     showNotification("Wish posted to the wall! 🎉", "💖");
     confettiEffect();
+    setTimeout(fetchNotes, 1000);
 }
 
 function confettiEffect(isGrand = false) {
@@ -128,7 +167,6 @@ function confettiEffect(isGrand = false) {
 }
 
 function startFireworks(isGrand = false) {
-    // Canvas-based particles are heavy, using a lighter simple burst logic
     const burst = document.createElement('div');
     burst.style.position = 'fixed';
     burst.style.top = Math.random() * 60 + 'vh';
@@ -147,7 +185,7 @@ function startFireworks(isGrand = false) {
     setTimeout(() => burst.remove(), 1000);
     
     if (isGrand) {
-        setTimeout(() => startFireworks(true), 1500);
+        setTimeout(() => startFireworks(true), 2000);
     }
 }
 
@@ -186,5 +224,6 @@ window.addEventListener('load', () => {
             startFireworks();
         }
     }, 2000);
-    renderNotes();
+    fetchNotes();
+    setInterval(fetchNotes, 5000);
 });

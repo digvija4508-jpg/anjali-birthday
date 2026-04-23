@@ -1,19 +1,6 @@
 // ═══════════════════ GLOBAL STORAGE (KeyValue.xyz) ═══════════════════
 const KV_URL = 'https://keyvalue.xyz/v1/dcf345f4169e49e798e3/anjali_birthday_final'; 
 
-// ═══════════════════ LOADING LOGIC ═══════════════════
-window.addEventListener('load', () => {
-    const loader = document.getElementById('loader');
-    setTimeout(() => {
-        if (loader) {
-            loader.style.opacity = '0';
-            setTimeout(() => loader.style.display = 'none', 800);
-        }
-        confettiEffect();
-        startFireworks();
-    }, 2000);
-});
-
 // ═══════════════════ NOTIFICATION LOGIC ═══════════════════
 function showNotification(message, icon = '✨') {
     const container = document.getElementById('toast-container');
@@ -76,7 +63,8 @@ let notes = [];
 
 async function fetchNotes() {
     try {
-        const response = await fetch(KV_URL);
+        // Add a timestamp to prevent caching
+        const response = await fetch(`${KV_URL}?t=${Date.now()}`);
         if (response.ok) {
             const data = await response.json();
             if (Array.isArray(data)) {
@@ -139,12 +127,23 @@ async function addStickyNote() {
         timestamp: Date.now()
     };
 
+    // Add locally for instant feedback
     notes.unshift(newNote);
     renderNotes();
+    
+    // Clear inputs
     stickyNameInput.value = '';
     stickyMessageInput.value = '';
+    
+    // Save to server
     await saveNotesToServer(notes);
+    
+    // Success notification
+    showNotification("Wish posted to the wall! 🎉", "💖");
     confettiEffect();
+    
+    // Re-fetch to sync
+    setTimeout(fetchNotes, 1000);
 }
 
 function confettiEffect(isGrand = false) {
@@ -183,7 +182,7 @@ function startFireworks(isGrand = false) {
     canvas.style.width = '100%';
     canvas.style.height = '100%';
     canvas.style.pointerEvents = 'none';
-    canvas.style.zIndex = '30000'; // Higher than overlay
+    canvas.style.zIndex = '30000'; 
     document.body.appendChild(canvas);
 
     const ctx = canvas.getContext('2d');
@@ -263,7 +262,7 @@ function startFireworks(isGrand = false) {
     }
 
     let count = 0;
-    const maxCount = isGrand ? 999999 : 10; // Non-stop in Grand mode
+    const maxCount = isGrand ? 999999 : 10; 
     const intervalTime = isGrand ? 350 : 400;
     
     const interval = setInterval(() => {
@@ -282,12 +281,10 @@ function triggerGrandEvent() {
     confettiEffect(true);
     startFireworks(true);
     
-    // Play Celebration Sound (Party Horn & Cheers)
     const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3'); 
     audio.volume = 0.4;
-    audio.play().catch(e => console.log("Audio play blocked by browser - requires interaction first"));
+    audio.play().catch(e => console.log("Audio play blocked by browser"));
 
-    // Create a special overlay
     const overlay = document.createElement('div');
     overlay.className = 'birthday-overlay';
     overlay.innerHTML = `
@@ -300,14 +297,27 @@ function triggerGrandEvent() {
     document.body.appendChild(overlay);
 }
 
-// Initial fetch and start polling every 5 seconds for new notes
-fetchNotes();
-setInterval(fetchNotes, 5000);
-
-// TRIGGER ON LOAD (Normal Celebration)
+// INITIALIZE
 window.addEventListener('load', () => {
+    // Hide Loader
+    const loader = document.getElementById('loader');
     setTimeout(() => {
-        confettiEffect();
-        startFireworks();
-    }, 1000);
+        if (loader) {
+            loader.style.opacity = '0';
+            setTimeout(() => loader.style.display = 'none', 800);
+        }
+        
+        // Trigger initial effects if birthday has already started
+        const now = new Date().getTime();
+        if (targetDate - now <= 0) {
+            triggerGrandEvent();
+        } else {
+            confettiEffect();
+            startFireworks();
+        }
+    }, 2000);
+
+    // Initial fetch and start polling
+    fetchNotes();
+    setInterval(fetchNotes, 5000);
 });

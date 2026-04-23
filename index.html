@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎂 Happy Birthday! 💖</title>
+    <meta name="description" content="A calm and aesthetic birthday celebration for my amazing sister.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Caveat:wght@400;600;700&family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="loader">
+        <div class="loader-content">
+            <div class="loader-cake">🎂</div>
+            <h2>Anjali's Birthday is Loading...</h2>
+            <p>Gathering all the love and magic ✨</p>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <nav class="navbar">
+        <div class="nav-logo">BIRTHDAY 🌺</div>
+        <ul class="nav-links">
+            <li><a href="#hero">Home</a></li>
+            <li><a href="#countdown">Countdown</a></li>
+            <li><a href="#reasons">About You</a></li>
+            <li><a href="#stickyNotes">Wishes</a></li>
+            <li><button class="nav-btn gift-btn" onclick="giftClick()">Gift 🎁</button></li>
+        </ul>
+    </nav>
+
+    <main>
+        <!-- HERO SECTION -->
+        <section class="hero" id="hero">
+            <div class="hero-content">
+                <div class="hero-left">
+                    <p class="hero-tagline">TO MY DEAREST BIG SISTER</p>
+                    <h1 class="hero-title">HAPPY BIRTHDAY<br>ANJALI!</h1>
+                    <p class="hero-subtitle">Wishing you a day as beautiful, calm, and full of grace as you are. 🌸</p>
+                    <div class="hero-cta">
+                        <a href="#countdown" class="btn btn-primary">See the Countdown</a>
+                    </div>
+                </div>
+                <div class="hero-right">
+                    <div class="illustration-container">
+                        <img src="cake.png" alt="Birthday Cake" class="img-cake main-illus">
+                        <img src="gift.png" alt="Gift Box" class="img-gift floating">
+                        <img src="flower.png" alt="Hibiscus" class="img-flower-hero">
+                        
+                        <div class="calendar-card">
+                            <span class="cal-day">24</span>
+                            <span class="cal-month">April</span>
+                        </div>
+                        <div class="css-balloon balloon-1"></div>
+                        <div class="css-balloon balloon-2"></div>
+                        <div class="css-balloon balloon-3"></div>
+                        <div class="floating-blobs">
+                            <div class="blob blob-1"></div>
+                            <div class="blob blob-2"></div>
+                            <div class="blob blob-3"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FEATURES GRID -->
+        <section class="features">
+            <div class="feature-item">
+                <img src="gift.png" alt="Gift" class="feature-icon">
+                <div class="feature-text">
+                    <h3>A YEAR OF GIFTS</h3>
+                    <p>May every day of this new year bring you a reason to smile.</p>
+                </div>
+                <div class="arrow-btn">✨</div>
+            </div>
+            <div class="feature-item">
+                <img src="flower.png" alt="Flower" class="feature-icon">
+                <div class="feature-text">
+                    <h3>ALWAYS BLOOMING</h3>
+                    <p>Watching you grow and inspire everyone around you is the best part of being your sibling.</p>
+                </div>
+                <div class="arrow-btn">🌸</div>
+            </div>
+        </section>
+
+        <!-- REASONS SECTION -->
+        <section class="reasons-section" id="reasons">
+            <div class="section-header">
+                <h2 class="crayon-h2">Why You're the Best Sister 💖</h2>
+                <p>A few small things that make you so incredibly special.</p>
+            </div>
+            <div class="reasons-grid">
+                <div class="reason-card">
+                    <div class="reason-num">01</div>
+                    <h3>Always Supportive</h3>
+                    <p>You're the first person I go to for advice because you always know exactly what to say.</p>
+                </div>
+                <div class="reason-card">
+                    <div class="reason-num">02</div>
+                    <h3>The Kindest Soul</h3>
+                    <p>The way you care for everyone around you is truly inspiring. You have a heart of gold.</p>
+                </div>
+                <div class="reason-card">
+                    <div class="reason-num">03</div>
+                    <h3>Strong & Graceful</h3>
+                    <p>Whatever life throws at you, you handle it with such strength and a calm smile.</p>
+                </div>
+                <div class="reason-card">
+                    <div class="reason-num">04</div>
+                    <h3>My First Friend</h3>
+                    <p>Beyond being my sister, you've always been my partner in crime and my best friend.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- COUNTDOWN SECTION -->
+        <section class="countdown-section" id="countdown">
+            <div class="countdown-card">
+                <h2 class="crayon-h2">THE BIG MOMENT ARRIVES IN:</h2>
+                <div class="countdown-timer">
+                    <div class="time-block">
+                        <span id="days">00</span>
+                        <label>Days</label>
+                    </div>
+                    <div class="time-block">
+                        <span id="hours">00</span>
+                        <label>Hours</label>
+                    </div>
+                    <div class="time-block">
+                        <span id="minutes">00</span>
+                        <label>Mins</label>
+                    </div>
+                    <div class="time-block">
+                        <span id="seconds">00</span>
+                        <label>Secs</label>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- BUCKET LIST SECTION -->
+        <section class="bucket-list">
+            <div class="bucket-container">
+                <div class="bucket-left">
+                    <img src="cake.png" alt="Cake" class="bucket-img">
+                </div>
+                <div class="bucket-right">
+                    <h2 class="crayon-h2">Sister's Birthday Bucket List 📋</h2>
+                    <ul class="check-list">
+                        <li>Eat your absolute favorite meal today 🍜</li>
+                        <li>Spend zero minutes worrying about anything ☁️</li>
+                        <li>Listen to your favorite playlist on repeat 🎶</li>
+                        <li>Win every single game we play today 🎮</li>
+                        <li>Capture the perfect birthday selfie 📸</li>
+                        <li>Make a big wish when you blow the candles ✨</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- STICKY NOTES SECTION -->
+        <section class="sticky-section" id="stickyNotes">
+            <div class="section-header">
+                <h2 class="crayon-h2">LEAVE A WISH FOR HER 📝</h2>
+                <p>Add a virtual sticky note to her birthday wall!</p>
+            </div>
+            
+            <div class="sticky-input-area">
+                <div class="input-row">
+                    <input type="text" id="stickyName" placeholder="Your Name" class="crayon-input">
+                    <select id="noteColor" class="crayon-input color-select">
+                        <option value="#FFF9C4">Yellow Paper</option>
+                        <option value="#E1F5FE">Blue Paper</option>
+                        <option value="#F8BBD0">Pink Paper</option>
+                        <option value="#C8E6C9">Green Paper</option>
+                        <option value="images/note_bg_1.jpg">Image 1</option>
+                        <option value="images/note_bg_2.jpg">Image 2</option>
+                        <option value="images/note_bg_3.jpg">Image 3</option>
+                        <option value="images/note_bg_4.jpg">Image 4</option>
+                    </select>
+                </div>
+                <textarea id="stickyMessage" placeholder="Your heartfelt birthday wish..." class="crayon-input"></textarea>
+                <button onclick="addStickyNote()" class="btn btn-primary post-btn">Stick It! 📌</button>
+            </div>
+
+            <div class="sticky-wall" id="stickyWall">
+                <!-- Notes will be injected here -->
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>Made with all my heart for my amazing sister 💖</p>
+            <p class="footer-small">© 2026 Celebration Portal | All the love in the world</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

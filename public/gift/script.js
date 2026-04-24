@@ -142,7 +142,7 @@ function createCard(key, entry, x, y) {
     const card = document.createElement('div');
     if (entry.isSticker) {
         card.className = `paper-sticker ${entry.type}`;
-        card.innerHTML = entry.type === 'butterfly' ? '🦋' : '🌸';
+        card.innerHTML = entry.type === 'butterfly' ? '🦋' : '\u1F338';
         card.style.transform = `rotate(${Math.random() * 40 - 20}deg)`;
     } else if (entry.isTheme) {
         card.className = 'theme-card';

@@ -68,14 +68,11 @@ body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden;
 }
 .infinity-wall { 
     position: absolute; top: 0; left: 0; 
-    will-change: transform;
-    transform: translateZ(0); /* FORCE GPU */
-}
+    }
 .memory-card { 
     position: absolute; background: #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.03); 
     border: 1px solid rgba(0,0,0,0.05); z-index: 2; padding: 10px; 
-    will-change: transform;
-}
+    }
 .paper-sticker { position: absolute; font-size: 4rem; z-index: 1; filter: drop-shadow(5px 5px 10px rgba(0,0,0,0.1)); opacity: 0.8; }
 .washi-tape { position: absolute; width: 120px; height: 35px; background: rgba(255, 183, 178, 0.4); backdrop-filter: blur(2px); border-left: 2px dashed rgba(0,0,0,0.05); border-right: 2px dashed rgba(0,0,0,0.05); left: 50%; margin-left: -60px; z-index: 10; }
 .theme-card { position: absolute; display: flex; align-items: center; justify-content: center; text-align: center; border-radius: 4px; z-index: 3; border: 2px solid rgba(0,0,0,0.03); background-image: url('https://www.transparenttextures.com/patterns/pinstriped-suit.png'); }

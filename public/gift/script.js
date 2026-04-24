@@ -151,8 +151,8 @@ function addToSector(entry) {
 function renderLoop() {
     const viewW = window.innerWidth / currentScale; 
     const viewH = window.innerHeight / currentScale;
-    const worldX = -currentX / currentScale; 
-    const worldY = -currentY / currentScale;
+    const worldX = -currentX; 
+    const worldY = -currentY;
     const buffer = 1000 / currentScale;
     const visibleKeys = new Set();
     

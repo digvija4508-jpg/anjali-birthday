@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Infinity Wall 🎁</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;600&family=Shadows+Into+Light&display=swap" rel="stylesheet">
+</head>
+<body class="infinity-mode">
+    <div id="wall-container" class="wall-container">
+        <div id="infinity-wall" class="infinity-wall">
+            <!-- 311 Memories scattered here -->
+        </div>
+    </div>
+    <div class="top-nav">
+        <a href="/" class="btn-minimal">← EXIT</a>
+        <div class="hint">CLICK & DRAG TO EXPLORE</div>
+    </div>
+    <div class="music-control" onclick="toggleMusic()">
+        <div id="musicIcon" class="music-icon">🎵</div>
+        <audio id="bgMusic" loop>
+            <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+        </audio>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Infinity Wall 🎁</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;600&family=Shadows+Into+Light&display=swap" rel="stylesheet">
+</head>
+<body onselectstart="return false">
+    
+    <!-- Background Music -->
+    <audio id="bg-music" loop preload="auto">
+        <source src="bg.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Password Lock Screen -->
+    <div id="lock-screen" class="lock-screen">
+        <div class="lock-card">
+            <div class="lock-icon">🔒</div>
+            <h1 class="lock-title">Anjali's Secret Wall</h1>
+            <p class="lock-hint">Enter your special key to unlock the memories...</p>
+            <div class="input-group">
+                <input type="password" id="pass-input" placeholder="Enter Password..." autocomplete="off">
+                <button id="unlock-btn">UNLOCK 🎁</button>
+            </div>
+            <p id="error-msg" class="error-msg">Incorrect key, try again ❤️</p>
+        </div>
+    </div>
+
+    <div class="wall-container">
+        <div id="infinity-wall" class="infinity-wall"></div>
+    </div>
+
+    <div class="top-nav">
+        <a href="/" class="btn-minimal">← EXIT GALLERY</a>
+    </div>
+
+    <div class="birthday-badge">
+        Happy Birthday Anjali <span class="heart-beat">❤️</span>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

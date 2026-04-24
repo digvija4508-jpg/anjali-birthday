@@ -1,0 +1,55 @@
+﻿* { user-select: none !important; touch-action: none; -webkit-tap-highlight-color: transparent; }
+:root { --bg-color: #fefefe; --font-main: 'Outfit', sans-serif; --font-fancy: 'Shadows Into Light', cursive; }
+body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: var(--bg-color); background-image: url('https://www.transparenttextures.com/patterns/paper-fibers.png'); }
+
+.lock-screen {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(40px);
+    z-index: 5000; display: flex; align-items: center; justify-content: center;
+    transition: opacity 1s ease;
+}
+.lock-card {
+    text-align: center; background: white; padding: 3rem; border-radius: 2rem;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.05);
+    max-width: 400px; width: 90%;
+}
+.lock-icon { font-size: 3rem; margin-bottom: 1rem; }
+.lock-title { font-family: var(--font-fancy); font-size: 2.5rem; margin-bottom: 0.5rem; }
+.lock-hint { color: #888; font-size: 0.9rem; margin-bottom: 2rem; }
+.input-group { display: flex; flex-direction: column; gap: 1rem; }
+#pass-input {
+    padding: 15px; border-radius: 50px; border: 1px solid #ddd;
+    text-align: center; font-size: 1.1rem; outline: none; transition: 0.3s;
+}
+#pass-input:focus { border-color: #ffb7b2; box-shadow: 0 0 10px rgba(255,183,178,0.3); }
+#unlock-btn {
+    padding: 15px; border-radius: 50px; border: none; background: #ffb7b2;
+    color: white; font-weight: bold; cursor: pointer; transition: 0.3s;
+}
+#unlock-btn:hover { background: #ff8e7e; transform: translateY(-3px); }
+.error-msg { color: #ff8e7e; margin-top: 1rem; font-size: 0.85rem; display: none; }
+
+.wall-container { 
+    width: 100vw; height: 100vh; position: relative; overflow: hidden; 
+}
+.infinity-wall { 
+    position: absolute; top: 0; left: 0; 
+    will-change: transform;
+    transform: translateZ(0); /* FORCE GPU */
+}
+.memory-card { 
+    position: absolute; background: #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.03); 
+    border: 1px solid rgba(0,0,0,0.05); z-index: 2; padding: 10px; 
+    will-change: transform;
+}
+.paper-sticker { position: absolute; font-size: 4rem; z-index: 1; filter: drop-shadow(5px 5px 10px rgba(0,0,0,0.1)); opacity: 0.8; }
+.washi-tape { position: absolute; width: 120px; height: 35px; background: rgba(255, 183, 178, 0.4); backdrop-filter: blur(2px); border-left: 2px dashed rgba(0,0,0,0.05); border-right: 2px dashed rgba(0,0,0,0.05); left: 50%; margin-left: -60px; z-index: 10; }
+.theme-card { position: absolute; display: flex; align-items: center; justify-content: center; text-align: center; border-radius: 4px; z-index: 3; border: 2px solid rgba(0,0,0,0.03); background-image: url('https://www.transparenttextures.com/patterns/pinstriped-suit.png'); }
+.theme-title { font-family: var(--font-fancy); font-size: 4rem; color: #444; }
+.image-wrapper { width: 100%; height: 100%; }
+.image-wrapper img, .image-wrapper video { width: 100%; height: 100%; object-fit: contain; display: block; }
+.top-nav { position: fixed; top: 2.5rem; left: 2.5rem; z-index: 2000; }
+.btn-minimal { color: black; text-decoration: none; font-weight: 800; letter-spacing: 2px; font-size: 0.7rem; border: 1px solid rgba(0,0,0,0.1); padding: 14px 28px; border-radius: 50px; background: rgba(255,255,255,0.8); backdrop-filter: blur(10px); }
+.birthday-badge { position: fixed; bottom: 2rem; right: 2rem; background: rgba(255,255,255,0.8); backdrop-filter: blur(10px); padding: 10px 20px; border-radius: 50px; font-family: var(--font-fancy); font-size: 1.2rem; border: 1px solid rgba(0,0,0,0.05); z-index: 2000; display: flex; align-items: center; gap: 10px; }
+.heart-beat { animation: beat 1s infinite alternate; }
+@keyframes beat { from { transform: scale(1); } to { transform: scale(1.2); } }

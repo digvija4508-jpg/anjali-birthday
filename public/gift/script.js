@@ -10,7 +10,7 @@ let currentScale = 1;
 let isDragging = false;
 let startX, startY, lastX, lastY, velocityX = 0, velocityY = 0;
 
-const COLS = 12;
+const COLS = 25;
 const COL_WIDTH = 400;
 const GAP = 15;
 const TOTAL_W = COLS * (COL_WIDTH + GAP);
@@ -133,8 +133,8 @@ async function initQuantum() {
         const scaleY = window.innerHeight / totalWallHeight;
         currentScale = Math.min(scaleX, scaleY) * 0.95; 
         
-        currentX = -(TOTAL_W / 2) + (window.innerWidth / (2 * currentScale));
-        currentY = -(totalWallHeight / 2) + (window.innerHeight / (2 * currentScale));
+        currentX = (window.innerWidth / currentScale - TOTAL_W) / 2;
+        currentY = (window.innerHeight / currentScale - totalWallHeight) / 2;
 
         renderLoop();
     } catch (err) { console.error(err); }
@@ -151,34 +151,30 @@ function addToSector(entry) {
 function renderLoop() {
     const viewW = window.innerWidth / currentScale; 
     const viewH = window.innerHeight / currentScale;
-    const worldX = -currentX; 
-    const worldY = -currentY;
+    const worldX = -currentX / currentScale; 
+    const worldY = -currentY / currentScale;
     const buffer = 1000 / currentScale;
     const visibleKeys = new Set();
-    for (let tx = -1; tx <= 1; tx++) {
-        for (let ty = -1; ty <= 1; ty++) {
-            const offsetX = tx * TOTAL_W; const offsetY = ty * totalWallHeight;
-            const startSx = Math.floor((worldX - buffer - offsetX) / SECTOR_SIZE);
-            const endSx = Math.floor((worldX + viewW + buffer - offsetX) / SECTOR_SIZE);
-            const startSy = Math.floor((worldY - buffer - offsetY) / SECTOR_SIZE);
-            const endSy = Math.floor((worldY + viewH + buffer - offsetY) / SECTOR_SIZE);
-            for (let sx = startSx; sx <= endSx; sx++) {
-                for (let sy = startSy; sy <= endSy; sy++) {
-                    const sKey = sx + ',' + sy;
-                    if (sectors[sKey]) {
-                        sectors[sKey].forEach(entry => {
-                            const realX = entry.x + offsetX; const realY = entry.y + offsetY;
-                            if (realX + entry.w > worldX - buffer && realX < worldX + viewW + buffer &&
-                                realY + entry.h > worldY - buffer && realY < worldY + viewH + buffer) {
-                                const key = entry.id + '-' + tx + '-' + ty; visibleKeys.add(key);
-                                if (!renderedCards.has(key)) createCard(key, entry, realX, realY);
-                            }
-                        });
+    
+    const startSx = Math.floor((worldX - buffer) / SECTOR_SIZE);
+    const endSx = Math.floor((worldX + viewW + buffer) / SECTOR_SIZE);
+    const startSy = Math.floor((worldY - buffer) / SECTOR_SIZE);
+    const endSy = Math.floor((worldY + viewH + buffer) / SECTOR_SIZE);
+    for (let sx = startSx; sx <= endSx; sx++) {
+        for (let sy = startSy; sy <= endSy; sy++) {
+            const sKey = sx + ',' + sy;
+            if (sectors[sKey]) {
+                sectors[sKey].forEach(entry => {
+                    if (entry.x + entry.w > worldX - buffer && entry.x < worldX + viewW + buffer &&
+                        entry.y + entry.h > worldY - buffer && entry.y < worldY + viewH + buffer) {
+                        const key = entry.id; visibleKeys.add(key);
+                        if (!renderedCards.has(key)) createCard(key, entry, entry.x, entry.y);
                     }
-                }
+                });
             }
         }
     }
+    
     for (const [key, card] of renderedCards.entries()) { if (!visibleKeys.has(key)) { card.remove(); renderedCards.delete(key); } }
     wall.style.transform = 'scale(' + currentScale + ') translate3d(' + currentX + 'px, ' + currentY + 'px, 0)';
     wall.style.transformOrigin = '0 0';
@@ -231,10 +227,7 @@ function applyMomentum() {
     if (!isDragging) {
         currentX += velocityX; currentY += velocityY;
         velocityX *= 0.95; velocityY *= 0.95;
-        if (currentX > 0) currentX -= TOTAL_W;
-        if (currentX < -TOTAL_W) currentX += TOTAL_W;
-        if (currentY > 0) currentY -= totalWallHeight;
-        if (currentY < -totalWallHeight) currentY += totalWallHeight;
+        // No wrapping to prevent duplicate loop
         renderLoop();
         if (Math.abs(velocityX) > 0.1 || Math.abs(velocityY) > 0.1) requestAnimationFrame(applyMomentum);
     }

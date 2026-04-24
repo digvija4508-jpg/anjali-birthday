@@ -231,3 +231,4 @@ window.addEventListener('load', () => {
     setInterval(fetchNotes, 5000);
 });
 
+

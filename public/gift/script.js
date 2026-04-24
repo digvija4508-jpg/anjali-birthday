@@ -32,8 +32,22 @@ function checkPass() {
     if (passInput.value === 'Anjali22!') {
         bgMusic.play().catch(e => console.log("Music blocked:", e));
         lockScreen.style.opacity = '0';
-        lockScreen.style.pointerEvents = 'none';
-        initQuantum();
+        setTimeout(() => { lockScreen.style.display = 'none'; }, 1000);
+        
+        // START LOADING SEQUENCE
+        const collectingScreen = document.getElementById('collecting-screen');
+        const progressBar = document.getElementById('progress-bar');
+        collectingScreen.style.display = 'flex';
+        
+        setTimeout(() => { progressBar.style.width = '100%'; }, 100);
+        
+        setTimeout(() => {
+            collectingScreen.style.opacity = '0';
+            setTimeout(() => { 
+                collectingScreen.style.display = 'none'; 
+                initQuantum(); // LOAD WALL AFTER PRE-LOAD
+            }, 1000);
+        }, 4500);
     } else {
         errorMsg.style.display = 'block';
         passInput.value = '';
@@ -200,3 +214,4 @@ window.addEventListener('mouseup', endDrag);
 window.addEventListener('touchstart', startDrag, { passive: false });
 window.addEventListener('touchmove', (e) => { moveDrag(e); e.preventDefault(); }, { passive: false });
 window.addEventListener('touchend', endDrag);
+

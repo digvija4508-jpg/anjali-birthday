@@ -5,7 +5,8 @@ const unlockBtn = document.getElementById('unlock-btn');
 const errorMsg = document.getElementById('error-msg');
 const bgMusic = document.getElementById('bg-music');
 
-let currentX = -1000, currentY = -1000;
+let currentX = 0, currentY = 0;
+let currentScale = 1;
 let isDragging = false;
 let startX, startY, lastX, lastY, velocityX = 0, velocityY = 0;
 
@@ -28,26 +29,62 @@ document.addEventListener('dragstart', e => e.preventDefault());
 unlockBtn.addEventListener('click', checkPass);
 passInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') checkPass(); });
 
-function checkPass() {
+async function checkPass() {
     if (passInput.value === 'Anjali22!') {
         bgMusic.play().catch(e => console.log("Music blocked:", e));
         lockScreen.style.opacity = '0';
         setTimeout(() => { lockScreen.style.display = 'none'; }, 1000);
         
-        // START LOADING SEQUENCE
         const collectingScreen = document.getElementById('collecting-screen');
         const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('loading-progress');
         collectingScreen.style.display = 'flex';
         
-        setTimeout(() => { progressBar.style.width = '100%'; }, 100);
-        
-        setTimeout(() => {
+        try {
+            const res = await fetch('/unique_media.json');
+            const items = await res.json();
+            allMedia = items;
+            
+            const totalItems = allMedia.length;
+            let loadedItems = 0;
+            if(progressText) progressText.innerText = '0 / ' + totalItems + ' downloaded';
+
+            const loadPromises = allMedia.map(item => {
+                return new Promise(resolve => {
+                    if (item.type === 'photo') {
+                        const img = new Image();
+                        img.onload = img.onerror = () => {
+                            loadedItems++;
+                            if(progressText) progressText.innerText = loadedItems + ' / ' + totalItems + ' downloaded';
+                            if(progressBar) progressBar.style.width = ((loadedItems/totalItems)*100) + '%';
+                            resolve();
+                        };
+                        img.src = '/media/' + item.name;
+                    } else {
+                        const video = document.createElement('video');
+                        video.onloadeddata = video.onerror = () => {
+                            loadedItems++;
+                            if(progressText) progressText.innerText = loadedItems + ' / ' + totalItems + ' downloaded';
+                            if(progressBar) progressBar.style.width = ((loadedItems/totalItems)*100) + '%';
+                            resolve();
+                        };
+                        video.src = '/media/' + item.name;
+                    }
+                });
+            });
+
+            await Promise.all(loadPromises);
+            
             collectingScreen.style.opacity = '0';
             setTimeout(() => { 
                 collectingScreen.style.display = 'none'; 
-                initQuantum(); // LOAD WALL AFTER PRE-LOAD
+                initQuantum(); 
             }, 1000);
-        }, 4500);
+
+        } catch (err) {
+            if(progressText) progressText.innerText = "Error loading memories.";
+            console.error(err);
+        }
     } else {
         errorMsg.style.display = 'block';
         passInput.value = '';
@@ -64,35 +101,41 @@ const THEMES = [
 
 async function initQuantum() {
     try {
-        const res = await fetch('/media/index.json');
-        const occasions = await res.json();
-        allMedia = occasions.flatMap(o => o.items);
         const colHeights = new Array(COLS).fill(0);
-        
+        allMedia.sort(() => Math.random() - 0.5);
+
         allMedia.forEach((item, index) => {
             if (index > 0 && index % 25 === 0) {
                 const theme = THEMES[Math.floor(index / 25) % THEMES.length];
                 const col = colHeights.indexOf(Math.min(...colHeights));
-                const entry = { x: col * (COL_WIDTH + GAP), y: colHeights[col], w: COL_WIDTH, h: 600, isTheme: true, theme, id: `t-${index}` };
+                const entry = { x: col * (COL_WIDTH + GAP), y: colHeights[col], w: COL_WIDTH, h: 600, isTheme: true, theme, id: 't-' + index };
                 layoutMap.push(entry);
                 addToSector(entry);
                 colHeights[col] += 600 + GAP;
             }
             const col = colHeights.indexOf(Math.min(...colHeights));
             const aspect = (item.height && item.width) ? (item.height / item.width) : 1.33;
-            const entry = { x: col * (COL_WIDTH + GAP), y: colHeights[col], w: COL_WIDTH, h: Math.floor(COL_WIDTH * aspect), item, id: `m-${index}` };
+            const entry = { x: col * (COL_WIDTH + GAP), y: colHeights[col], w: COL_WIDTH, h: Math.floor(COL_WIDTH * aspect), item, id: 'm-' + index };
             layoutMap.push(entry);
             addToSector(entry);
             colHeights[col] += entry.h + GAP;
             
             if (Math.random() > 0.9) {
                 const colS = Math.floor(Math.random() * COLS);
-                const sEntry = { x: colS * (COL_WIDTH + GAP) + (Math.random()*200-100), y: colHeights[colS] + (Math.random()*100), w: 120, h: 120, isSticker: true, type: Math.random() > 0.5 ? 'butterfly' : 'flower', id: `s-${index}` };
+                const sEntry = { x: colS * (COL_WIDTH + GAP) + (Math.random()*200-100), y: colHeights[colS] + (Math.random()*100), w: 120, h: 120, isSticker: true, type: Math.random() > 0.5 ? 'butterfly' : 'flower', id: 's-' + index };
                 layoutMap.push(sEntry);
                 addToSector(sEntry);
             }
         });
         totalWallHeight = Math.max(...colHeights);
+
+        const scaleX = window.innerWidth / TOTAL_W;
+        const scaleY = window.innerHeight / totalWallHeight;
+        currentScale = Math.min(scaleX, scaleY) * 0.95; 
+        
+        currentX = -(TOTAL_W / 2) + (window.innerWidth / (2 * currentScale));
+        currentY = -(totalWallHeight / 2) + (window.innerHeight / (2 * currentScale));
+
         renderLoop();
     } catch (err) { console.error(err); }
 }
@@ -106,9 +149,11 @@ function addToSector(entry) {
 }
 
 function renderLoop() {
-    const viewW = window.innerWidth; const viewH = window.innerHeight;
-    const worldX = -currentX; const worldY = -currentY;
-    const buffer = 1000;
+    const viewW = window.innerWidth / currentScale; 
+    const viewH = window.innerHeight / currentScale;
+    const worldX = -currentX; 
+    const worldY = -currentY;
+    const buffer = 1000 / currentScale;
     const visibleKeys = new Set();
     for (let tx = -1; tx <= 1; tx++) {
         for (let ty = -1; ty <= 1; ty++) {
@@ -119,13 +164,13 @@ function renderLoop() {
             const endSy = Math.floor((worldY + viewH + buffer - offsetY) / SECTOR_SIZE);
             for (let sx = startSx; sx <= endSx; sx++) {
                 for (let sy = startSy; sy <= endSy; sy++) {
-                    const sKey = `${sx},${sy}`;
+                    const sKey = sx + ',' + sy;
                     if (sectors[sKey]) {
                         sectors[sKey].forEach(entry => {
                             const realX = entry.x + offsetX; const realY = entry.y + offsetY;
                             if (realX + entry.w > worldX - buffer && realX < worldX + viewW + buffer &&
                                 realY + entry.h > worldY - buffer && realY < worldY + viewH + buffer) {
-                                const key = `${entry.id}-${tx}-${ty}`; visibleKeys.add(key);
+                                const key = entry.id + '-' + tx + '-' + ty; visibleKeys.add(key);
                                 if (!renderedCards.has(key)) createCard(key, entry, realX, realY);
                             }
                         });
@@ -135,7 +180,8 @@ function renderLoop() {
         }
     }
     for (const [key, card] of renderedCards.entries()) { if (!visibleKeys.has(key)) { card.remove(); renderedCards.delete(key); } }
-    wall.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
+    wall.style.transform = 'scale(' + currentScale + ') translate3d(' + currentX + 'px, ' + currentY + 'px, 0)';
+    wall.style.transformOrigin = '0 0';
 }
 
 function createCard(key, entry, x, y) {
@@ -158,9 +204,14 @@ function createCard(key, entry, x, y) {
             wrapper.appendChild(img);
         } else {
             const video = document.createElement('video');
-            video.src = `/media/${entry.item.name}`; video.autoplay = true; video.muted = true; video.loop = true; video.playsInline = true;
-            video.draggable = false; // ANTI-DRAG
+            video.src = '/media/' + entry.item.name; 
+            video.muted = true; video.loop = true; video.playsInline = true;
+            video.pause();
+            video.draggable = false;
             wrapper.appendChild(video);
+            
+            card.addEventListener('mouseenter', () => video.play().catch(()=>{}));
+            card.addEventListener('mouseleave', () => video.pause());
         }
         card.appendChild(wrapper);
         if (Math.random() > 0.5) {
@@ -215,3 +266,28 @@ window.addEventListener('touchstart', startDrag, { passive: false });
 window.addEventListener('touchmove', (e) => { moveDrag(e); e.preventDefault(); }, { passive: false });
 window.addEventListener('touchend', endDrag);
 
+
+window.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const zoomFactor = 0.001;
+    const delta = -e.deltaY * zoomFactor;
+    
+    const mouseX = e.pageX;
+    const mouseY = e.pageY;
+    
+    // Convert mouse position to world coordinates
+    const worldMouseX = (mouseX / currentScale) - currentX;
+    const worldMouseY = (mouseY / currentScale) - currentY;
+    
+    const scaleChange = 1 + delta;
+    let newScale = currentScale * scaleChange;
+    if (newScale < 0.02) newScale = 0.02;
+    if (newScale > 5) newScale = 5;
+    
+    // Adjust currentX and currentY to keep the mouse pointing at the same world coordinates
+    currentX = (mouseX / newScale) - worldMouseX;
+    currentY = (mouseY / newScale) - worldMouseY;
+    
+    currentScale = newScale;
+    renderLoop();
+}, { passive: false });

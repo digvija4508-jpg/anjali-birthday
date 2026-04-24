@@ -1,0 +1,196 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: #fffaf0; /* Warm paper white */
+    background-image: 
+        radial-gradient(circle at 10% 20%, rgba(255, 183, 178, 0.2) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(178, 223, 255, 0.2) 0%, transparent 40%),
+        radial-gradient(circle at 50% 50%, rgba(255, 230, 150, 0.15) 0%, transparent 60%);
+    color: #333;
+    font-family: 'Outfit', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Floating decorations */
+body::before {
+    content: '🦋';
+    position: fixed;
+    top: 10%;
+    left: 5%;
+    font-size: 3rem;
+    opacity: 0.6;
+    animation: float1 10s ease-in-out infinite;
+    z-index: 1;
+    pointer-events: none;
+}
+
+body::after {
+    content: '🌸';
+    position: fixed;
+    bottom: 10%;
+    right: 5%;
+    font-size: 4rem;
+    opacity: 0.6;
+    animation: float2 12s ease-in-out infinite reverse;
+    z-index: 1;
+    pointer-events: none;
+}
+
+@keyframes float1 {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    50% { transform: translate(20px, -20px) rotate(10deg); }
+}
+
+@keyframes float2 {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    50% { transform: translate(-30px, 15px) rotate(-15deg); }
+}
+
+#preloader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #fffaf0;
+    background-image: 
+        radial-gradient(circle at 20% 80%, rgba(255, 183, 178, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(178, 223, 255, 0.3) 0%, transparent 50%);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    transition: opacity 0.5s ease;
+}
+
+.loader-content h1 {
+    font-family: 'Shadows Into Light', cursive;
+    color: #FFB7B2;
+    font-size: 3rem;
+    margin-bottom: 10px;
+}
+
+.loader-content p {
+    font-size: 1.2rem;
+    color: #666;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.bounce {
+    animation: bounce 1s infinite;
+}
+
+.header {
+    text-align: center;
+    padding: 10px 0;
+    background: rgba(255, 255, 255, 0.8);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header h1 {
+    font-family: 'Shadows Into Light', cursive;
+    font-size: 2.5rem;
+    color: #FFB7B2;
+}
+
+.header p {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+/* 
+  The mosaic container uses CSS Grid. 
+  To fit ~300 images entirely on screen without scrolling, 
+  we need the grid items to be very small, and the container to take up exactly the remaining viewport height.
+*/
+.mosaic-container {
+    flex-grow: 1;
+    display: grid;
+    /* Create a dense grid: approx 25 columns and 13 rows for 311 images */
+    grid-template-columns: repeat(25, 1fr);
+    grid-auto-rows: minmax(10px, 1fr); 
+    grid-auto-flow: dense;
+    gap: 8px; /* More gap to show the album background and borders */
+    padding: 15px;
+    height: calc(100vh - 80px); /* Fill the rest of the screen */
+    background: rgba(255, 255, 255, 0.4);
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
+    border-radius: 10px;
+    margin: 10px;
+}
+
+/* Album Polaroid Style */
+.media-cell {
+    width: 100%;
+    height: 100%;
+    background-color: #fff;
+    padding: 2px; /* White polaroid border */
+    position: relative;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.15);
+    transition: transform 0.2s, z-index 0.2s, box-shadow 0.2s;
+    /* Hardware acceleration to prevent lag! */
+    transform: translateZ(0);
+    will-change: transform;
+}
+
+/* Randomized rotations to look like scattered album photos */
+.media-cell:nth-child(even) { transform: rotate(2deg); }
+.media-cell:nth-child(odd) { transform: rotate(-2deg); }
+.media-cell:nth-child(3n) { transform: rotate(3deg); }
+.media-cell:nth-child(5n) { transform: rotate(-4deg); }
+.media-cell:nth-child(7n) { transform: rotate(1deg); }
+
+/* Washi Tape Effect on some photos */
+.media-cell:nth-child(4n)::after {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: 50%;
+    transform: translateX(-50%) rotate(-5deg);
+    width: 40%;
+    height: 8px;
+    background: rgba(255, 183, 178, 0.6);
+    z-index: 5;
+}
+
+.media-cell:nth-child(9n)::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    right: 10%;
+    transform: rotate(15deg);
+    width: 30%;
+    height: 8px;
+    background: rgba(178, 223, 255, 0.6);
+    z-index: 5;
+}
+
+/* Hover effect to zoom in slightly if they want to peek */
+.media-cell:hover {
+    transform: scale(3.5) rotate(0deg) !important;
+    z-index: 100;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+}
+
+.media-cell img,
+.media-cell video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}

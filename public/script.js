@@ -1,8 +1,8 @@
-﻿// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• SERVER API â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// --- SERVER API ---
 const API_URL = '/api/wishes';
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• NOTIFICATION LOGIC â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-function showNotification(message, icon = 'âœ¨') {
+// --- NOTIFICATION LOGIC ---
+function showNotification(message, icon = '*') {
     const container = document.getElementById('toast-container');
     if (!container) return;
     const toast = document.createElement('div');
@@ -16,15 +16,15 @@ function showNotification(message, icon = 'âœ¨') {
     }, 3000);
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• GIFT TEASER â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// --- GIFT TEASER ---
 function giftClick() {
-    showNotification("Opening Anjali's special surprise... âœ¨", "ðŸŽ");
+    showNotification("Opening Anjali surprise...", "*");
     setTimeout(() => {
         window.location.href = '/gift/';
     }, 1500);
 }
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• COUNTDOWN LOGIC â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// --- COUNTDOWN LOGIC ---
 const targetDate = new Date(2026, 3, 24, 0, 0, 0).getTime(); 
 
 function updateCountdown() {
@@ -40,7 +40,7 @@ function updateCountdown() {
             document.getElementById('seconds').innerText = "00";
         }
         const title = document.querySelector('.countdown-card h2');
-        if (title) title.innerText = "ðŸŽ‰ HAPPY BIRTHDAY ANJALI! ðŸŽ‰";
+        if (title) title.innerText = " HAPPY BIRTHDAY ANJALI! ";
         if (!document.body.classList.contains('birthday-mode')) triggerGrandEvent();
         return;
     }
@@ -62,7 +62,7 @@ function updateCountdown() {
 setInterval(updateCountdown, 1000);
 updateCountdown();
 
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• STICKY NOTES LOGIC â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// --- STICKY NOTES ---
 const stickyWall = document.getElementById('stickyWall');
 const stickyNameInput = document.getElementById('stickyName');
 const stickyMessageInput = document.getElementById('stickyMessage');
@@ -126,7 +126,7 @@ async function addStickyNote() {
     const color = noteColorInput.value;
 
     if (!name || !message) {
-        showNotification("Please write your name and a sweet wish! âœ¨", "âš ï¸");
+        showNotification("Please write your name and a sweet wish! ", "*");
         return;
     }
 
@@ -143,14 +143,14 @@ async function addStickyNote() {
     stickyMessageInput.value = '';
     
     await saveNotesToServer(notes);
-    showNotification("Wish posted to the wall! ðŸŽ‰", "ðŸ’–");
+    showNotification("Wish posted to the wall!", "");
     confettiEffect();
     setTimeout(fetchNotes, 1000);
 }
 
 function confettiEffect(isGrand = false) {
     const count = isGrand ? 30 : 10; 
-    const particles = ['âœ¨', 'ðŸŒ¸', 'ðŸ’–'];
+    const particles = ['*', '+', '.'];
     for (let i = 0; i < count; i++) {
         const confetti = document.createElement('div');
         confetti.innerText = particles[Math.floor(Math.random() * particles.length)];
@@ -177,7 +177,7 @@ function startFireworks(isGrand = false) {
     burst.style.fontSize = isGrand ? '3rem' : '1.5rem';
     burst.style.zIndex = '30000';
     burst.style.pointerEvents = 'none';
-    burst.innerHTML = 'âœ¨';
+    burst.innerHTML = '';
     burst.style.transition = 'all 1s ease-out';
     document.body.appendChild(burst);
     
@@ -205,9 +205,9 @@ function triggerGrandEvent() {
     overlay.className = 'birthday-overlay';
     overlay.innerHTML = `
         <div class="overlay-content">
-            <h1>HAPPY BIRTHDAY ANJALI! ðŸŽ‚</h1>
-            <p>Today is all about YOU! ðŸ’–âœ¨</p>
-            <button onclick="this.parentElement.parentElement.remove()" class="btn btn-primary">Let's Party! ðŸŽ‰</button>
+            <h1>HAPPY BIRTHDAY ANJALI!</h1>
+            <p>Today is all about YOU!</p>
+            <button onclick="this.parentElement.parentElement.remove()" class="btn btn-primary">Let's Party!</button>
         </div>
     `;
     document.body.appendChild(overlay);
